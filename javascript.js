@@ -1,9 +1,3 @@
-// player objects need a score that can't be manually changed (private, with only readScore() as a public method?)
-
-// method makeMark(field) on player objects?
-
-// OR each field is an object with a private property of mark and public methods that can view and change the mark? and gameboard is an array of the field objects?
-
 gameboard = (function() {
     let state = ["", "", "", "", "", "", "", "", ""];
     function getState() {
