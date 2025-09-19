@@ -4,7 +4,7 @@
 
 // OR each field is an object with a private property of mark and public methods that can view and change the mark? and gameboard is an array of the field objects?
 
-function createField(letter, number) {
+/* function createField(letter, number) {
     const name = `field${letter}${number}`;
 
     let mark = '';
@@ -38,4 +38,54 @@ gameboard = (function createGameboard(colNumber, rowNumber) {
         }
     }
     return gameboard;
-})(3,3);
+})(3,3); */
+
+gameboard = (function() {
+    state = ["", "", "", "", "", "", "", "", ""];
+    getState = function() {
+        return state;
+    }
+    setMark = function(position, mark) {
+        state[position] = mark;
+    }
+    return {getState, setMark}
+})();
+
+playGame = (function(players) {
+    let turnIndex = 0;
+    let currentPlayer = players[turnIndex];
+    getCurrentPlayer = function() {
+        return currentPlayer;
+    }
+    advanceTurn = function() {
+        if (turnIndex < (players.length)) {
+            turnIndex++;
+        } else turnIndex = 0;
+        return turnIndex;
+    }
+    makeMark = function(position, currentPlayer) {
+        gameboard.setMark(position, currentPlayer.mark);
+    }
+    return {turnIndex, getCurrentPlayer, advanceTurn, makeMark};
+});
+
+function createPlayer(name, mark) {
+    let player = {
+        name,
+        mark
+    }
+    return player;
+};
+
+alex = createPlayer('alex', 'o');
+jamie = createPlayer('jamie', 'x');
+
+game = playGame([alex, jamie]);
+
+game.advanceTurn();
+console.log(game.getCurrentPlayer());
+
+/* gameboard.setMark(3, alex.mark);
+gameboard.setMark(0, jamie.mark); */
+
+console.log(gameboard.getState());
