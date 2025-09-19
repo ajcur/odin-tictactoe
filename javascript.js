@@ -27,7 +27,7 @@ playTurn = (function(players) {
     let turnIndex = 0;
     let currentPlayer = players[turnIndex];
     function getCurrentPlayer() {
-        return currentPlayer.name;
+        return currentPlayer;
     }
     function advanceTurn() {
         if (turnIndex < (players.length - 1)) {
