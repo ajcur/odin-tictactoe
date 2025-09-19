@@ -4,75 +4,24 @@
 
 // OR each field is an object with a private property of mark and public methods that can view and change the mark? and gameboard is an array of the field objects?
 
-/* function createField(letter, number) {
-    const name = `field${letter}${number}`;
-
-    let mark = '';
-    const setMark = function(newMark) {
-        mark = newMark;
-    };
-    const getMark = function() {
-        return mark;
-    }
-
-    return { name, setMark, getMark };
-}
-
-gameboard = (function createGameboard(colNumber, rowNumber) {
-    let letter;
-    let gameboard = [];
-    for (let i = 1; i <= rowNumber; i++) {
-        for (let j = 1; j <= colNumber; j++) {
-            switch (j) {
-                case 1:
-                    letter = 'A';
-                    break;
-                case 2:
-                    letter = 'B';
-                    break;
-                case 3:
-                    letter = 'C';
-            }
-            let newField = createField(letter, i)
-            gameboard.push(newField);
-        }
-    }
-    return gameboard;
-})(3,3); */
-
 gameboard = (function() {
-    state = ["", "", "", "", "", "", "", "", ""];
-    getState = function() {
+    let state = ["", "", "", "", "", "", "", "", ""];
+    function getState() {
         return state;
     }
-    setMark = function(position, mark) {
+    function setMark(position, mark) {
         state[position] = mark;
     }
     return {getState, setMark}
 })();
 
-playGame = (function(players) {
-    let turnIndex = 0;
-    let currentPlayer = players[turnIndex];
-    getCurrentPlayer = function() {
-        return currentPlayer;
-    }
-    advanceTurn = function() {
-        if (turnIndex < (players.length)) {
-            turnIndex++;
-        } else turnIndex = 0;
-        return turnIndex;
-    }
-    makeMark = function(position, currentPlayer) {
-        gameboard.setMark(position, currentPlayer.mark);
-    }
-    return {turnIndex, getCurrentPlayer, advanceTurn, makeMark};
-});
-
 function createPlayer(name, mark) {
     let player = {
         name,
-        mark
+        mark,
+        makeMark: function(position) {
+            gameboard.setMark(position, this.mark);
+        }
     }
     return player;
 };
@@ -80,12 +29,33 @@ function createPlayer(name, mark) {
 alex = createPlayer('alex', 'o');
 jamie = createPlayer('jamie', 'x');
 
-game = playGame([alex, jamie]);
+playTurn = (function(players) {
+    let turnIndex = 0;
+    let currentPlayer = players[turnIndex];
+    function getCurrentPlayer() {
+        return currentPlayer.name;
+    }
+    function advanceTurn() {
+        if (turnIndex < (players.length - 1)) {
+            turnIndex++;
+        } else turnIndex = 0;
+        currentPlayer = players[turnIndex];
+    }
+    function makeMark(position) {
+        currentPlayer.makeMark(position);
+    }
+    return {getCurrentPlayer, advanceTurn, makeMark};
+})([alex, jamie]);
 
-game.advanceTurn();
-console.log(game.getCurrentPlayer());
-
-/* gameboard.setMark(3, alex.mark);
-gameboard.setMark(0, jamie.mark); */
+playTurn.makeMark(3);
+playTurn.advanceTurn();
+playTurn.makeMark(0);
 
 console.log(gameboard.getState());
+
+/* Next steps:
+- Take input of position from player
+- Logic to determine win state and winning player
+- Logic to determine tie state
+- Logic to play turns until win or tie state is reached 
+- Add a way to input player name + mark and populate the players array automatically */
