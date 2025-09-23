@@ -1,6 +1,41 @@
 gameboard = (function() {
     let state = ["", "", "", "", "", "", "", "", ""];
 
+    const possibleCombinations = [
+        [3, 4, 5],
+        [0, 1, 2],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [2, 4, 6],
+        [0, 4, 8]
+    ]
+
+ /*    possibleCombinations = function(mark) {
+        rowOne = (state[0] == mark && state[1] == mark && state[2] == mark);
+        rowTwo = (state[3] == mark && state[4] == mark && state[5] == mark);
+        rowThree = (state[6] == mark && state[7] == mark && state[8] == mark);
+        columnOne = (state[0] == mark && state[3] == mark && state[6] == mark);
+        columnTwo = (state[1] == mark && state[4] == mark && state[7] == mark);
+        columnThree = (state[2] == mark && state[5] == mark && state[8] == mark);
+        diagonalUp = (state[2] == mark && state[4] == mark && state[6] == mark);
+        diagonalDown = (state[0] == mark && state[4] == mark && state[8] == mark);
+        
+        oneTrue = (rowOne || rowTwo || rowThree || columnOne || columnTwo || columnThree || diagonalUp || diagonalDown);
+
+        allTrue = (rowOne && rowTwo && rowThree && columnOne && columnTwo && columnThree && diagonalUp && diagonalDown);
+
+        return {oneTrue, allTrue};
+    } */
+
+    /* let winCombinations = function(i) {
+        across = [state[i], state[i+1], state[i+2]],
+        down = [state[i], state [i+3], state[i+6]],
+        diagonalUp = [state[i], state[i+2], state[i+4]],
+        diagonalDown = [state[i], state[i+4], state[i+8]]
+    } */
+
     function getState() {
         return state;
     }
@@ -8,32 +43,81 @@ gameboard = (function() {
     function setMark(position, mark) {
         if (position >= state.length || position < 0) {
             alert('Not a valid gameboard position');
-            return;
+            return false;
         }
         if (state[position] !== "") {
             alert ('Not an empty position');
-            return;
+            return false;
         }
         state[position] = mark;
+        return true;
     }
 
     function determineWinState(mark) {
         let winState = false;
-        let i = 0;
-        while (!winState && i <= 8) {
+        for (const combination of possibleCombinations) {
             if (
-                ((i == 0 || 3 || 6) && (state[i] && state[i+1] && state[i+2] == mark)) ||
-                ((i < 3) && (state[i] && state[i+3] && state[i+6] == mark)) ||
-                ((i == 0) && (state[i] && state[i+4] && state[i+8] == mark)) ||
-                ((i == 2) && (state[i] && state[i+2] && state[i+4] == mark))
-            ){
+                state[combination[0]] == mark &&
+                state[combination[1]] == mark && 
+                state[combination[2]] == mark
+            ) {
                 winState = true;
-            } else i++;
-        }
-        return winState;
+            }
         }
 
-    return {getState, setMark, determineWinState}
+        /* let winState = possibleCombinations.oneTrue(mark); */
+        /* while (!winState && i < 8) { */
+            /* switch (i) {
+                case 0:
+                    if ((state[i] == mark && state[i+1] == mark && state[i+2] == mark) ||
+                        (state[i] == mark && state[i+3] == mark && state[i+6] == mark) ||
+                        (state[i] == mark && state[i+4] == mark && state[i+8] == mark)) {
+                            winState = true;
+                    }
+                case 1:
+
+            } */
+            /* if (
+                ((i == 0 || i == 3 || i == 6) && 
+                    (state[i] == mark && state[i+1] == mark && state[i+2] == mark)) ||
+                ((i < 3) && 
+                    (state[i] == mark && state[i+3] == mark && state[i+6] == mark)) ||
+                ((i == 0) &&
+                    (state[i] == mark && state[i+4] == mark && state[i+8] == mark)) ||
+                ((i == 2) && 
+                    (state[i] == mark && state[i+2] == mark && state[i+4] == mark))
+            ){
+                winState = true;
+            } else i++; */
+        return winState;
+    }
+    
+    function determineTieState() {
+        let tieState = false;
+        for (const combination of possibleCombinations) {
+            if (
+                state[combination[0]] != "" &&
+                state[combination[1]] != "" &&
+                state[combination[2]] != ""
+            ){
+                tieState = true;
+            }
+        }
+        /* let i = 0;
+        while (!tieState && i < 8) {
+            if (
+                ((i == 0 || i == 3 || i == 6) && (state[i] && state[i+1] && state[i+2])) &&
+                ((i < 3) && (state[i] && state[i+3] && state[i+6])) &&
+                ((i == 0) && (state[i] && state[i+4] && state[i+8])) &&
+                ((i == 2) && (state[i] && state[i+2] && state[i+4]))
+            ){
+                tieState = true;
+            } else i++;
+        } */
+        return tieState;
+    }
+
+    return {getState, setMark, determineWinState, determineTieState}
 
 })();
 
@@ -44,7 +128,7 @@ players = (function() {
             name,
             mark,
             makeMark: function(position) {
-                gameboard.setMark(position, this.mark);
+                return gameboard.setMark(position, this.mark);
             }
         }
         list.push(player);
@@ -77,34 +161,52 @@ game = (function() {
         }
 
         function playTurn() {
-            position = setPosition();
-            currentPlayer.makeMark(position);
-            if (gameboard.getState()[position] != currentPlayer.mark) {
-                return;
+            let gameStates = {
+                winState: false,
+                tieState: false
+            };
+
+            gameStates.tieState = gameboard.determineTieState();
+            
+            if (gameStates.tieState) {
+                alert('Tie! Try again!');
+                return {gameStates, winner}
             }
 
-            let winner;
-            let winState = gameboard.determineWinState(currentPlayer.mark);
+            let position = setPosition();
+            let markSuccessful = currentPlayer.makeMark(position);
 
-            if (winState) {
+            let winner;
+
+            if (!markSuccessful) {
+                return {gameStates, winner};
+            }
+
+            gameStates.winState = gameboard.determineWinState(currentPlayer.mark);
+
+            if (gameStates.winState) {
                 winner = currentPlayer.name;
-                alert(`Congratulations! ${winner} won the game!`)
-                return;
+                alert(`Congratulations! ${winner} won the game!`);
+                return {gameStates, winner};
             }
 
             advanceTurn();
             
             console.log(gameboard.getState());
             
-            return {winState, winner};
+            return {gameStates, winner};
             }
+
         return {getCurrentPlayer, playTurn};
     })(players.list);
 
     function playGame() {
-        let winState = false;
-        while (!winState) {
-            winState = gameFunctions.playTurn().winState;
+        let gameStates = {
+            winState: false,
+            tieState: false
+        }
+        while (!gameStates.winState && !gameStates.tieState) {
+            gameStates = gameFunctions.playTurn().gameStates;
         }
     }
     
