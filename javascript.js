@@ -12,30 +12,6 @@ gameboard = (function() {
         [0, 4, 8]
     ]
 
- /*    possibleCombinations = function(mark) {
-        rowOne = (state[0] == mark && state[1] == mark && state[2] == mark);
-        rowTwo = (state[3] == mark && state[4] == mark && state[5] == mark);
-        rowThree = (state[6] == mark && state[7] == mark && state[8] == mark);
-        columnOne = (state[0] == mark && state[3] == mark && state[6] == mark);
-        columnTwo = (state[1] == mark && state[4] == mark && state[7] == mark);
-        columnThree = (state[2] == mark && state[5] == mark && state[8] == mark);
-        diagonalUp = (state[2] == mark && state[4] == mark && state[6] == mark);
-        diagonalDown = (state[0] == mark && state[4] == mark && state[8] == mark);
-        
-        oneTrue = (rowOne || rowTwo || rowThree || columnOne || columnTwo || columnThree || diagonalUp || diagonalDown);
-
-        allTrue = (rowOne && rowTwo && rowThree && columnOne && columnTwo && columnThree && diagonalUp && diagonalDown);
-
-        return {oneTrue, allTrue};
-    } */
-
-    /* let winCombinations = function(i) {
-        across = [state[i], state[i+1], state[i+2]],
-        down = [state[i], state [i+3], state[i+6]],
-        diagonalUp = [state[i], state[i+2], state[i+4]],
-        diagonalDown = [state[i], state[i+4], state[i+8]]
-    } */
-
     function getState() {
         return state;
     }
@@ -67,16 +43,6 @@ gameboard = (function() {
 
         /* let winState = possibleCombinations.oneTrue(mark); */
         /* while (!winState && i < 8) { */
-            /* switch (i) {
-                case 0:
-                    if ((state[i] == mark && state[i+1] == mark && state[i+2] == mark) ||
-                        (state[i] == mark && state[i+3] == mark && state[i+6] == mark) ||
-                        (state[i] == mark && state[i+4] == mark && state[i+8] == mark)) {
-                            winState = true;
-                    }
-                case 1:
-
-            } */
             /* if (
                 ((i == 0 || i == 3 || i == 6) && 
                     (state[i] == mark && state[i+1] == mark && state[i+2] == mark)) ||
@@ -103,6 +69,7 @@ gameboard = (function() {
                 tieState = true;
             }
         }
+        
         /* let i = 0;
         while (!tieState && i < 8) {
             if (
