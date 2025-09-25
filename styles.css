@@ -1,0 +1,23 @@
+body {
+    display: grid;
+    justify-content: center;
+}
+
+.controls {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.gameboard {
+    width: min(80vh, 80vw);
+    height: min(80vh, 80vw);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.gameboard-field {
+    border: 1px solid black;
+}

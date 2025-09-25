@@ -6,6 +6,28 @@ const player1SymbolInput = document.querySelector('#symbol1');
 const player2SymbolInput = document.querySelector('#symbol2');
 const startGameBtn = document.querySelector('#start-game');
 
+const gameboardFieldA1 = document.querySelector('#a1');
+const gameboardFieldA2 = document.querySelector('#a2');
+const gameboardFieldA3 = document.querySelector('#a3');
+const gameboardFieldB1 = document.querySelector('#b1');
+const gameboardFieldB2 = document.querySelector('#b2');
+const gameboardFieldB3 = document.querySelector('#b3');
+const gameboardFieldC1 = document.querySelector('#c1');
+const gameboardFieldC2 = document.querySelector('#c2');
+const gameboardFieldC3 = document.querySelector('#c3');
+
+const gameboardFields = [
+    gameboardFieldA1,
+    gameboardFieldA2,
+    gameboardFieldA3,
+    gameboardFieldB1,
+    gameboardFieldB2,
+    gameboardFieldB3,
+    gameboardFieldC1,
+    gameboardFieldC2,
+    gameboardFieldC3
+];
+
 gameboard = (function() {
     let state = ["", "", "", "", "", "", "", "", ""];
 
@@ -24,13 +46,19 @@ gameboard = (function() {
         return state;
     }
 
+    function render() {
+        for (let i = 0; i < state.length; i++) {
+            gameboardFields[i].textContent = state[i];
+        };
+    }
+
     function setMark(position, mark) {
         if (position >= state.length || position < 0) {
-            alert('Not a valid gameboard position');
+            console.log('Not a valid gameboard position');
             return false;
         }
         if (state[position] !== "") {
-            alert ('Not an empty position');
+            console.log('Not an empty position');
             return false;
         }
         state[position] = mark;
@@ -67,14 +95,14 @@ gameboard = (function() {
     }
     
     function determineTieState() {
-        let tieState = false;
+        let tieState = true;
         for (const combination of possibleCombinations) {
             if (
-                state[combination[0]] != "" &&
-                state[combination[1]] != "" &&
-                state[combination[2]] != ""
+                state[combination[0]] == "" ||
+                state[combination[1]] == "" ||
+                state[combination[2]] == ""
             ){
-                tieState = true;
+                tieState = false;
             }
         }
         
@@ -92,7 +120,7 @@ gameboard = (function() {
         return tieState;
     }
 
-    return {getState, setMark, determineWinState, determineTieState}
+    return {getState, render, setMark, determineWinState, determineTieState}
 
 })();
 
@@ -131,45 +159,52 @@ game = (function() {
             currentPlayer = playerList[turnIndex];
         }
 
-        function setPosition() {
-            return prompt(`Mark position for ${currentPlayer.name}?`);
-        }
+        /* function setPosition() {
+            let position;
+            gameboardFields.forEach((field) => {
+                field.addEventListener('click', () => {
+                    position = gameboardFields.indexOf(field)
+                })
+            })
+            return position;
+        }; */
 
-        function playTurn() {
+        function playTurn(position) {
             let gameStates = {
                 winState: false,
                 tieState: false
             };
 
-            gameStates.tieState = gameboard.determineTieState();
-            
-            if (gameStates.tieState) {
-                alert('Tie! Try again!');
-                return {gameStates, winner}
-            }
-
-            let position = setPosition();
             let markSuccessful = currentPlayer.makeMark(position);
 
             let winner;
 
             if (!markSuccessful) {
-                return {gameStates, winner};
+                return {gameStates};
             }
+
+            console.log(gameboard.getState());
+            gameboard.render();
 
             gameStates.winState = gameboard.determineWinState(currentPlayer.mark);
 
             if (gameStates.winState) {
                 winner = currentPlayer.name;
-                alert(`Congratulations! ${winner} won the game!`);
+                console.log(`Congratulations! ${winner} won the game!`);
                 return {gameStates, winner};
+            }
+
+            gameStates.tieState = gameboard.determineTieState();
+            
+            if (gameStates.tieState) {
+                console.log('Tie! Try again!');
+                return {gameStates}
             }
 
             advanceTurn();
             
-            console.log(gameboard.getState());
             
-            return {gameStates, winner};
+            return {gameStates};
             }
 
         return {getCurrentPlayer, playTurn};
@@ -182,9 +217,15 @@ game = (function() {
             winState: false,
             tieState: false
         }
-        while (!gameStates.winState && !gameStates.tieState) {
-            gameStates = gameFunctions.playTurn().gameStates;
-        }
+
+        gameboardFields.forEach((field) => {
+            field.addEventListener('click', () => {
+                let position = gameboardFields.indexOf(field);
+                if (!gameStates.winState && !gameStates.tieState) {
+                    gameStates = gameFunctions.playTurn(position).gameStates;
+                }
+            })
+        })
     }
     
     return {playGame}
