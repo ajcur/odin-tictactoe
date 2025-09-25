@@ -1,3 +1,11 @@
+const newGameBtn = document.querySelector('#new-game');
+const newPlayerDialog = document.querySelector('.new-player-window');
+const player1NameInput = document.querySelector('#name1');
+const player2NameInput = document.querySelector('#name2');
+const player1SymbolInput = document.querySelector('#symbol1');
+const player2SymbolInput = document.querySelector('#symbol2');
+const startGameBtn = document.querySelector('#start-game');
+
 gameboard = (function() {
     let state = ["", "", "", "", "", "", "", "", ""];
 
@@ -105,10 +113,10 @@ players = (function() {
 })();
 
 game = (function() {
-    players.createPlayer('alex', 'o');
-    players.createPlayer('jamie', 'x');
+    /* players.createPlayer('alex', 'o');
+    players.createPlayer('jamie', 'x'); */
 
-    gameFunctions = (function (playerList) {
+    initializeGameFunctions = function (playerList) {
         let turnIndex = 0;
         let currentPlayer = playerList[turnIndex];
 
@@ -165,9 +173,11 @@ game = (function() {
             }
 
         return {getCurrentPlayer, playTurn};
-    })(players.list);
+    };
 
     function playGame() {
+        gameFunctions = initializeGameFunctions(players.list);
+        
         let gameStates = {
             winState: false,
             tieState: false
@@ -181,7 +191,21 @@ game = (function() {
 
 })();
 
-game.playGame();
+newGameBtn.addEventListener('click', () => {
+    newPlayerDialog.showModal();
+})
+
+newPlayerDialog.addEventListener('submit', () => {
+    let player1Name = player1NameInput.value;
+    let player1Symbol = player1SymbolInput.value;
+    let player2Name = player2NameInput.value;
+    let player2Symbol = player2SymbolInput.value;
+
+    players.createPlayer(player1Name, player1Symbol);
+    players.createPlayer(player2Name, player2Symbol);
+
+    game.playGame();
+})
 
 /* Next steps:
 - Take input of position from player
