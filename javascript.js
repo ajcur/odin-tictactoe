@@ -1,35 +1,30 @@
-const newGameBtn = document.querySelector('#new-game');
-const newPlayerDialog = document.querySelector('.new-player-window');
+/* const newGameBtn = document.querySelector('#new-game');
+const newPlayerDialog = document.querySelector('.new-player-dialog');
 const player1NameInput = document.querySelector('#name1');
 const player2NameInput = document.querySelector('#name2');
 const player1SymbolInput = document.querySelector('#symbol1');
 const player2SymbolInput = document.querySelector('#symbol2');
 const startGameBtn = document.querySelector('#start-game');
-
-const gameboardFieldA1 = document.querySelector('#a1');
-const gameboardFieldA2 = document.querySelector('#a2');
-const gameboardFieldA3 = document.querySelector('#a3');
-const gameboardFieldB1 = document.querySelector('#b1');
-const gameboardFieldB2 = document.querySelector('#b2');
-const gameboardFieldB3 = document.querySelector('#b3');
-const gameboardFieldC1 = document.querySelector('#c1');
-const gameboardFieldC2 = document.querySelector('#c2');
-const gameboardFieldC3 = document.querySelector('#c3');
-
-const gameboardFields = [
-    gameboardFieldA1,
-    gameboardFieldA2,
-    gameboardFieldA3,
-    gameboardFieldB1,
-    gameboardFieldB2,
-    gameboardFieldB3,
-    gameboardFieldC1,
-    gameboardFieldC2,
-    gameboardFieldC3
-];
+const winStateAnnouncement = document.querySelector('.win-state-announcement');
+const winStateDialog = document.querySelector('.win-state-dialog');
+const tieStateDialog = document.querySelector('.tie-state-dialog'); */
 
 gameboard = (function() {
     let state = ["", "", "", "", "", "", "", "", ""];
+
+    uiFields = (function() {
+        const a1 = document.querySelector('#a1');
+        const a2 = document.querySelector('#a2');
+        const a3 = document.querySelector('#a3');
+        const b1 = document.querySelector('#b1');
+        const b2 = document.querySelector('#b2');
+        const b3 = document.querySelector('#b3');
+        const c1 = document.querySelector('#c1');
+        const c2 = document.querySelector('#c2');
+        const c3 = document.querySelector('#c3');
+
+        return [a1, a2, a3, b1, b2, b3, c1, c2, c3]
+    })();
 
     const possibleCombinations = [
         [3, 4, 5],
@@ -48,7 +43,7 @@ gameboard = (function() {
 
     function render() {
         for (let i = 0; i < state.length; i++) {
-            gameboardFields[i].textContent = state[i];
+            uiFields[i].textContent = state[i];
         };
     }
 
@@ -76,21 +71,6 @@ gameboard = (function() {
                 winState = true;
             }
         }
-
-        /* let winState = possibleCombinations.oneTrue(mark); */
-        /* while (!winState && i < 8) { */
-            /* if (
-                ((i == 0 || i == 3 || i == 6) && 
-                    (state[i] == mark && state[i+1] == mark && state[i+2] == mark)) ||
-                ((i < 3) && 
-                    (state[i] == mark && state[i+3] == mark && state[i+6] == mark)) ||
-                ((i == 0) &&
-                    (state[i] == mark && state[i+4] == mark && state[i+8] == mark)) ||
-                ((i == 2) && 
-                    (state[i] == mark && state[i+2] == mark && state[i+4] == mark))
-            ){
-                winState = true;
-            } else i++; */
         return winState;
     }
     
@@ -105,27 +85,17 @@ gameboard = (function() {
                 tieState = false;
             }
         }
-        
-        /* let i = 0;
-        while (!tieState && i < 8) {
-            if (
-                ((i == 0 || i == 3 || i == 6) && (state[i] && state[i+1] && state[i+2])) &&
-                ((i < 3) && (state[i] && state[i+3] && state[i+6])) &&
-                ((i == 0) && (state[i] && state[i+4] && state[i+8])) &&
-                ((i == 2) && (state[i] && state[i+2] && state[i+4]))
-            ){
-                tieState = true;
-            } else i++;
-        } */
         return tieState;
     }
 
-    return {getState, render, setMark, determineWinState, determineTieState}
+    return {getState, uiFields, render, setMark, determineWinState, determineTieState}
 
 })();
 
 players = (function() {
+    
     let list = [];
+    
     function createPlayer(name, mark) {
         let player = {
             name,
@@ -137,14 +107,45 @@ players = (function() {
         list.push(player);
         return player;
     };
+
     return {list, createPlayer};
 })();
 
 game = (function() {
-    /* players.createPlayer('alex', 'o');
-    players.createPlayer('jamie', 'x'); */
+    
+    gameUI = (function(){
+        const newGameBtn = document.querySelector('#new-game');
+        const newPlayerDialog = document.querySelector('.new-player-dialog');
+        const player1NameInput = document.querySelector('#name1');
+        const player2NameInput = document.querySelector('#name2');
+        const player1SymbolInput = document.querySelector('#symbol1');
+        const player2SymbolInput = document.querySelector('#symbol2');
+        const startGameBtn = document.querySelector('#start-game');
+        const winStateAnnouncement = document.querySelector('.win-state-announcement');
+        const winStateDialog = document.querySelector('.win-state-dialog');
+        const tieStateDialog = document.querySelector('.tie-state-dialog');
 
-    initializeGameFunctions = function (playerList) {
+        return {
+            newGameBtn,
+            newPlayerDialog,
+            player1NameInput,
+            player2NameInput,
+            player1SymbolInput,
+            player2SymbolInput,
+            startGameBtn,
+            winStateAnnouncement,
+            winStateDialog,
+            tieStateDialog
+        }
+    })();
+
+    (function openNewPlayerDialog() {
+        gameUI.newGameBtn.addEventListener('click', () => {
+            gameUI.newPlayerDialog.showModal();
+        })
+    })();
+
+    initializeGameFunctions = function(playerList) {
         let turnIndex = 0;
         let currentPlayer = playerList[turnIndex];
 
@@ -159,52 +160,40 @@ game = (function() {
             currentPlayer = playerList[turnIndex];
         }
 
-        /* function setPosition() {
-            let position;
-            gameboardFields.forEach((field) => {
-                field.addEventListener('click', () => {
-                    position = gameboardFields.indexOf(field)
-                })
-            })
-            return position;
-        }; */
-
         function playTurn(position) {
-            let gameStates = {
+            let turnResult = {
                 winState: false,
                 tieState: false
             };
 
             let markSuccessful = currentPlayer.makeMark(position);
 
-            let winner;
-
             if (!markSuccessful) {
-                return {gameStates};
+                return {turnResult};
             }
 
             console.log(gameboard.getState());
             gameboard.render();
 
-            gameStates.winState = gameboard.determineWinState(currentPlayer.mark);
+            turnResult.winState = gameboard.determineWinState(currentPlayer.mark);
 
-            if (gameStates.winState) {
-                winner = currentPlayer.name;
-                console.log(`Congratulations! ${winner} won the game!`);
-                return {gameStates, winner};
+            if (turnResult.winState) {
+                let winner = currentPlayer.name;
+                gameUI.winStateDialog.showModal();
+                gameUI.winStateAnnouncement.textContent = `Congratulations! ${winner} won the game!`;
+                return {turnResult};
             }
 
-            gameStates.tieState = gameboard.determineTieState();
+            turnResult.tieState = gameboard.determineTieState();
             
-            if (gameStates.tieState) {
-                console.log('Tie! Try again!');
-                return {gameStates}
+            if (turnResult.tieState) {
+                gameUI.tieStateDialog.showModal();
+                return {turnResult};
             }
 
             advanceTurn();
             
-            
-            return {gameStates};
+            return {turnResult};
             }
 
         return {getCurrentPlayer, playTurn};
@@ -213,44 +202,39 @@ game = (function() {
     function playGame() {
         gameFunctions = initializeGameFunctions(players.list);
         
-        let gameStates = {
+        let turnResult = {
             winState: false,
             tieState: false
         }
 
-        gameboardFields.forEach((field) => {
+        gameboard.uiFields.forEach((field) => {
             field.addEventListener('click', () => {
-                let position = gameboardFields.indexOf(field);
-                if (!gameStates.winState && !gameStates.tieState) {
-                    gameStates = gameFunctions.playTurn(position).gameStates;
+                let position = gameboard.uiFields.indexOf(field);
+                if (!turnResult.winState && !turnResult.tieState) {
+                    turnResult = gameFunctions.playTurn(position).turnResult;
                 }
             })
         })
     }
-    
-    return {playGame}
+
+    (function startGame() {
+        gameUI.newPlayerDialog.addEventListener('submit', () => {
+
+            players.createPlayer(gameUI.player1NameInput.value, gameUI.player1SymbolInput.value);
+            players.createPlayer(gameUI.player2NameInput.value, gameUI.player2SymbolInput.value);
+
+            playGame();
+        })
+    })();
+
+    return;
 
 })();
 
-newGameBtn.addEventListener('click', () => {
-    newPlayerDialog.showModal();
-})
+/* newPlayerDialog.addEventListener('submit', () => {
 
-newPlayerDialog.addEventListener('submit', () => {
-    let player1Name = player1NameInput.value;
-    let player1Symbol = player1SymbolInput.value;
-    let player2Name = player2NameInput.value;
-    let player2Symbol = player2SymbolInput.value;
-
-    players.createPlayer(player1Name, player1Symbol);
-    players.createPlayer(player2Name, player2Symbol);
+    players.createPlayer(player1NameInput.value, player1SymbolInput.value);
+    players.createPlayer(player2NameInput.value, player2SymbolInput.value);
 
     game.playGame();
-})
-
-/* Next steps:
-- Take input of position from player
-- Logic to determine win state and winning player
-- Logic to determine tie state
-- Logic to play turns until win or tie state is reached 
-- Add a way to input player name + mark and populate the players array automatically */
+}) */

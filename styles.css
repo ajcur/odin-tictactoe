@@ -1,3 +1,62 @@
+/* 1. Use a more-intuitive box-sizing model */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 2. Remove default margin */
+* {
+  margin: 0;
+}
+
+/* 3. Enable keyword animations */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    interpolate-size: allow-keywords;
+  }
+}
+
+body {
+  /* 4. Add accessible line-height */
+  line-height: 1.5;
+  /* 5. Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 6. Improve media defaults */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 7. Inherit fonts for form controls */
+input, button, textarea, select {
+  font: inherit;
+}
+
+/* 8. Avoid text overflows */
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+/* 9. Improve line wrapping */
+p {
+  text-wrap: pretty;
+}
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+/*
+  10. Create a root stacking context
+*/
+#root, #__next {
+  isolation: isolate;
+}
+
+:root {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
 body {
     display: grid;
     justify-content: center;
@@ -5,9 +64,14 @@ body {
 
 .controls {
     display: grid;
-    justify-content: center;
+    justify-items: center;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
+    margin: 2rem 0;
+}
+
+.controls button {
+    width: 10rem;
 }
 
 .gameboard {
@@ -16,8 +80,39 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
+    border: 1px solid black;
 }
 
 .gameboard-field {
     border: 1px solid black;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+}
+
+dialog {
+    justify-self: center;
+    align-self: center;
+}
+
+.new-player-container {
+    margin-bottom: 1rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+}
+
+.player-mark {
+    width: 2em;
+}
+
+form {
+    display: grid;
+}
+
+form button {
+    justify-self: center;
+    align-self: center;
+    margin-top: 2rem;
 }

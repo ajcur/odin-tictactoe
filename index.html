@@ -14,22 +14,34 @@
             <button id="reset-game">Reset</button>
         </div>
     </header>
-    <dialog class="new-player-window">
+    <dialog class="new-player-dialog">
         <form method="dialog" id="new-player">
             <div class="new-player-container">
-                <label for="name1">Player 1 Name:</label>
-                <input type="text" id="name1" name="name1" required>
-                <label for="symbol1">Player 1 Symbol:</label>
-                <input type="text" id="symbol1" name="symbol1" required>
+                <label for="name1">Player 1 Name:
+                    <input type="text" class="player-name" id="name1" name="name1" required>
+                </label>
+                <label for="symbol1">Player 1 Symbol:
+                    <input type="text" class="player-mark" id="symbol1" name="symbol1" required>
+                </label>
             </div>
             <div class="new-player-container">
-                <label for="name2">Player 2 Name:</label>
-                <input type="text" id="name2" name="name2" required>
-                <label for="symbol2">Player 2 Symbol:</label>
-                <input type="text" id="symbol2" name="symbol2" required>
+                <label for="name2">Player 2 Name:
+                    <input type="text" class="player-name" id="name2" name="name2" required>
+                </label>
+                <label for="symbol2">Player 2 Symbol:
+                    <input type="text" class="player-mark" id="symbol2" name="symbol2" required>
+                </label>
             </div>
             <button type="submit" id="start-game">Start Game</button>
         </form>
+    </dialog>
+    <dialog class="tie-state-dialog">
+        <h2 class="tie-state-announcement">Tie!</h2>
+        <button type="button" class="start-over">Play again</button>
+    </dialog>
+    <dialog class="win-state-dialog">
+        <h2 class="win-state-announcement"></h2>
+        <button type="button" class="start-over">Play again</button>
     </dialog>
     <div class="gameboard">
         <div class="gameboard-field" id="a1"></div>
