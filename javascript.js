@@ -10,6 +10,7 @@ const winStateDialog = document.querySelector('.win-state-dialog');
 const tieStateDialog = document.querySelector('.tie-state-dialog'); */
 
 gameboard = (function() {
+
     let state = ["", "", "", "", "", "", "", "", ""];
 
     uiFields = (function() {
@@ -39,6 +40,11 @@ gameboard = (function() {
 
     function getState() {
         return state;
+    }
+
+    function reset() {
+        state = ["", "", "", "", "", "", "", "", ""];
+        render();
     }
 
     function render() {
@@ -88,13 +94,17 @@ gameboard = (function() {
         return tieState;
     }
 
-    return {getState, uiFields, render, setMark, determineWinState, determineTieState}
+    return {getState, uiFields, render, reset, setMark, determineWinState, determineTieState}
 
 })();
 
 players = (function() {
     
     let list = [];
+
+    function getList() {
+        return list;
+    };
     
     function createPlayer(name, mark) {
         let player = {
@@ -108,13 +118,19 @@ players = (function() {
         return player;
     };
 
-    return {list, createPlayer};
+    function clearPlayers() {
+        list = [];
+    };
+
+    return {getList, createPlayer, clearPlayers};
 })();
 
 game = (function() {
     
     gameUI = (function(){
         const newGameBtn = document.querySelector('#new-game');
+        const resetGameBtn = document.querySelector('#reset-game');
+        const startOverBtns = Array.from(document.querySelectorAll('.start-over'));
         const newPlayerDialog = document.querySelector('.new-player-dialog');
         const player1NameInput = document.querySelector('#name1');
         const player2NameInput = document.querySelector('#name2');
@@ -127,6 +143,8 @@ game = (function() {
 
         return {
             newGameBtn,
+            resetGameBtn,
+            startOverBtns,
             newPlayerDialog,
             player1NameInput,
             player2NameInput,
@@ -143,6 +161,32 @@ game = (function() {
         gameUI.newGameBtn.addEventListener('click', () => {
             gameUI.newPlayerDialog.showModal();
         })
+    })();
+
+    function resetNewPlayerDialog() {
+        gameUI.player1NameInput.value = "";
+        gameUI.player1SymbolInput.value = "";
+        gameUI.player2NameInput.value = "";
+        gameUI.player2SymbolInput.value = "";
+    }
+
+    (function resetBtn() {
+        gameUI.resetGameBtn.addEventListener('click', () => {
+            gameboard.reset();
+        });
+    })();
+
+    (function startOver() {
+        for (button of gameUI.startOverBtns) {
+            button.addEventListener('click', () => {
+                gameboard.reset();
+                players.clearPlayers();
+                gameUI.tieStateDialog.close();
+                gameUI.winStateDialog.close();
+
+                gameUI.newPlayerDialog.showModal();
+            });
+        };
     })();
 
     initializeGameFunctions = function(playerList) {
@@ -200,7 +244,7 @@ game = (function() {
     };
 
     function playGame() {
-        gameFunctions = initializeGameFunctions(players.list);
+        gameFunctions = initializeGameFunctions(players.getList());
         
         let turnResult = {
             winState: false,
@@ -215,6 +259,7 @@ game = (function() {
                 }
             })
         })
+        return {turnResult};
     }
 
     (function startGame() {
@@ -223,6 +268,8 @@ game = (function() {
             players.createPlayer(gameUI.player1NameInput.value, gameUI.player1SymbolInput.value);
             players.createPlayer(gameUI.player2NameInput.value, gameUI.player2SymbolInput.value);
 
+            resetNewPlayerDialog();
+
             playGame();
         })
     })();
@@ -230,11 +277,3 @@ game = (function() {
     return;
 
 })();
-
-/* newPlayerDialog.addEventListener('submit', () => {
-
-    players.createPlayer(player1NameInput.value, player1SymbolInput.value);
-    players.createPlayer(player2NameInput.value, player2SymbolInput.value);
-
-    game.playGame();
-}) */
